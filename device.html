@@ -90,10 +90,20 @@
       //         // Handle completion in parent window
       //     }
       // });
+
+      document
+        .getElementById("device-form")
+        .addEventListener("submit", function (event) {
+          event.preventDefault();
+          runAuthentication();
+        });
     </script>
   </head>
   <body>
     <h1>3D Secure Authentication</h1>
-    <button onclick="runAuthentication()">Start Authentication</button>
+
+    <form id="device-form">
+      <button type="submit">Start Authentication</button>
+    </form>
   </body>
 </html>
