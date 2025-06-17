@@ -18,7 +18,7 @@
       async function runAuthentication() {
         try {
           // Call Netlify function to get redirect URL
-          const response = await fetch("/.netlify/functions/get-redirect-url");
+          const response = await fetch("/.netlify/functions/hello-world");
 
           if (!response.ok) {
             throw new Error(`HTTP error! status: ${response.status}`);
