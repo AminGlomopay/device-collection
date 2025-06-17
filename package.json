@@ -1,0 +1,11 @@
+{
+  "name": "device-collection",
+  "version": "1.0.0",
+  "description": "Device collection with 3D Secure authentication",
+  "main": "index.html",
+  "scripts": {
+    "build": "echo 'No build required'"
+  },
+  "dependencies": {},
+  "devDependencies": {}
+}

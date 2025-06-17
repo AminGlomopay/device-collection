@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Device collection</title>
+    <script>
+      function createHiddenIframe() {
+        const iframe = document.createElement("iframe");
+        iframe.style.width = "0px";
+        iframe.style.height = "0px";
+        iframe.style.border = "none";
+        iframe.style.position = "absolute";
+        iframe.style.top = "-9999px";
+        return iframe;
+      }
+
+      async function runAuthentication() {
+        try {
+          // Call Netlify function to get redirect URL
+          const response = await fetch("/.netlify/functions/get-redirect-url");
+
+          if (!response.ok) {
+            throw new Error(`HTTP error! status: ${response.status}`);
+          }
+
+          const data = await response.json();
+
+          if (!data.success) {
+            throw new Error(data.error || "Failed to get redirect URL");
+          }
+
+          const redirect_html = data.redirectHtml;
+
+          const iframe = createHiddenIframe();
+          document.body.appendChild(iframe);
+
+          const iframeDoc = iframe.contentWindow.document;
+          var decodedHTML = decodeURIComponent(redirect_html);
+
+          // Add the event listener script to the HTML before writing to iframe
+          const listenerScript = `
+                <script>
+                    window.addEventListener('message', function(event) {
+                        if (event.origin === 'https://centinelapistag.cardinalcommerce.com') {
+                            try {
+                                const data = event.data;
+                                const jsonData = JSON.parse(data);
+                                if (jsonData.MessageType === 'profile.completed') {
+                                    console.log('Device collection completed');
+                                    // Forward the event to parent window if needed
+                                    window.parent.postMessage({
+                                        type: 'deviceCollectionComplete',
+                                        data: jsonData
+                                    }, '*');
+                                }
+                            } catch (error) {
+                                console.error('Error processing Cardinal Commerce event:', error);
+                            }
+                        }
+                    });
+                <\/script>
+            `;
+
+          // Combine the listener script with your decoded HTML
+          const fullHTML = decodedHTML + listenerScript;
+
+          iframeDoc.open();
+          iframeDoc.write(fullHTML);
+          iframeDoc.close();
+
+          const script = iframeDoc.getElementById(
+            "initiate-authentication-script"
+          );
+          if (script) {
+            iframe.contentWindow.eval(script.textContent);
+          }
+        } catch (error) {
+          console.error("Error fetching redirect URL:", error);
+          alert("Failed to start authentication. Please try again.");
+        }
+      }
+
+      // Optional: Listen for forwarded events from iframe in parent window
+      // window.addEventListener('message', function(event) {
+      //     if (event.data.type === 'deviceCollectionComplete') {
+      //         console.log('Received completion event from iframe:', event.data);
+      //         console.log('this is where we call our second API');
+
+      //         // Handle completion in parent window
+      //     }
+      // });
+    </script>
+  </head>
+  <body>
+    <h1>3D Secure Authentication</h1>
+    <button onclick="runAuthentication()">Start Authentication</button>
+  </body>
+</html>
