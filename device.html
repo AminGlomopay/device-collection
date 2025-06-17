@@ -90,13 +90,6 @@
       //         // Handle completion in parent window
       //     }
       // });
-
-      document
-        .getElementById("device-form")
-        .addEventListener("submit", function (event) {
-          event.preventDefault();
-          runAuthentication();
-        });
     </script>
   </head>
   <body>
@@ -105,5 +98,14 @@
     <form id="device-form">
       <button type="submit">Start Authentication</button>
     </form>
+
+    <script>
+      document
+        .getElementById("device-form")
+        .addEventListener("submit", function (event) {
+          event.preventDefault();
+          runAuthentication();
+        });
+    </script>
   </body>
 </html>
