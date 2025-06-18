@@ -102,12 +102,12 @@
     <script>
       document
         .getElementById("device-form")
-        .addEventListener("submit", function (event) {
+        .addEventListener("submit", async function (event) {
           event.preventDefault();
 
-          window.open("", "loading page");
+          // window.open("", "loading page");
 
-          runAuthentication();
+          await runAuthentication();
         });
     </script>
   </body>
